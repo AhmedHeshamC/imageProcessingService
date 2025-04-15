@@ -131,3 +131,10 @@ See [swagger.yaml](./swagger.yaml) for full OpenAPI documentation.
 
 ---
 ````
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+````
+## Project URLs
+- https://roadmap.sh/projects/image-processing-service
+- https://github.com/AhmedHeshamC/imageProcessingService
