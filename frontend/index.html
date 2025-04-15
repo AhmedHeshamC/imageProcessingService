@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Processing Service Frontend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg: #f8fafc;
+      --card-bg: #fff;
+      --border: #e5e7eb;
+      --radius: 12px;
+      --shadow: 0 2px 16px rgba(30,64,175,0.07);
+    }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2.5em auto;
+      padding: 2em;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    h1 {
+      text-align: center;
+      color: var(--primary-dark);
+      margin-bottom: 2em;
+      letter-spacing: -1px;
+    }
+    .section {
+      margin-bottom: 2em;
+      padding-bottom: 1.5em;
+      border-bottom: 1px solid var(--border);
+    }
+    .section:last-child {
+      border-bottom: none;
+    }
+    h2 {
+      color: var(--primary);
+      margin-bottom: 1em;
+      font-size: 1.2em;
+      letter-spacing: -0.5px;
+    }
+    label {
+      display: block;
+      margin: 0.5em 0 0.2em 0;
+      font-weight: 500;
+    }
+    input[type="text"], input[type="password"], input[type="number"], select {
+      width: 100%;
+      padding: 0.6em 0.8em;
+      margin-bottom: 0.7em;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1em;
+      background: #f1f5f9;
+      transition: border 0.2s;
+    }
+    input[type="file"] {
+      margin-bottom: 1em;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7em 1.5em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(30,64,175,0.07);
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-top: 0.5em;
+    }
+    button:hover, button:focus {
+      background: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(30,64,175,0.12);
+    }
+    .result, .error {
+      margin-top: 0.7em;
+      font-size: 0.98em;
+      padding: 0.7em 1em;
+      border-radius: 6px;
+    }
+    .result {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+    .error {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .images-list > div {
+      background: #f1f5f9;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      padding: 1em;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 4px rgba(30,64,175,0.04);
+    }
+    .images-list pre {
+      background: transparent;
+      padding: 0;
+      margin: 0.5em 0 0 0;
+      font-size: 0.95em;
+      color: #475569;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 0.7em 0;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 4px rgba(30,64,175,0.04);
+    }
+    @media (max-width: 700px) {
+      .container {
+        max-width: 98vw;
+        padding: 1em;
+      }
+    }
+    .row {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .row label {
+      margin: 0;
+      flex: 1 1 120px;
+    }
+    .row input, .row select {
+      flex: 1 1 80px;
+      margin-bottom: 0;
+    }
+    .checkbox-row {
+      display: flex;
+      gap: 1.5em;
+      margin: 0.7em 0;
+      align-items: center;
+    }
+    .checkbox-row label {
+      display: flex;
+      align-items: center;
+      font-weight: 400;
+      gap: 0.4em;
+      margin: 0;
+    }
+    .transform-controls > div {
+      margin-bottom: 0.5em;
+    }
+    .transform-controls select, .transform-controls input[type="text"] {
+      width: auto;
+      min-width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Processing Service</h1>
+
+    <div class="section" id="register-section">
+      <h2>Register</h2>
+      <label for="reg-username">Username</label>
+      <input id="reg-username" placeholder="Username">
+      <label for="reg-password">Password</label>
+      <input id="reg-password" type="password" placeholder="Password">
+      <button onclick="register()">Register</button>
+      <div id="register-result"></div>
+    </div>
+
+    <div class="section" id="login-section">
+      <h2>Login</h2>
+      <label for="login-username">Username</label>
+      <input id="login-username" placeholder="Username">
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <div id="login-result"></div>
+    </div>
+
+    <div class="section" id="upload-section" style="display:none;">
+      <h2>Upload Image</h2>
+      <input type="file" id="image-file">
+      <button onclick="uploadImage()">Upload</button>
+      <div id="upload-result"></div>
+    </div>
+
+    <div class="section" id="images-section" style="display:none;">
+      <h2>My Images</h2>
+      <button onclick="listImages()">Refresh List</button>
+      <div class="images-list" id="images-list"></div>
+    </div>
+
+    <div class="section" id="transform-section" style="display:none;">
+      <h2>Transform Image</h2>
+      <select id="transform-image-id"></select>
+      <div class="transform-controls">
+        <div class="row">
+          <label>Resize:</label>
+          <input id="resize-width" type="number" placeholder="Width">
+          <input id="resize-height" type="number" placeholder="Height">
+        </div>
+        <div class="row">
+          <label>Crop:</label>
+          <input id="crop-left" type="number" placeholder="Left">
+          <input id="crop-top" type="number" placeholder="Top">
+          <input id="crop-width" type="number" placeholder="Width">
+          <input id="crop-height" type="number" placeholder="Height">
+        </div>
+        <div class="row">
+          <label>Rotate:</label>
+          <input id="rotate" type="number" placeholder="deg">
+        </div>
+        <div class="row">
+          <label>Watermark URL:</label>
+          <input id="watermark-url" type="text" placeholder="Image URL">
+          <select id="watermark-gravity">
+            <option value="southeast">Southeast</option>
+            <option value="center">Center</option>
+            <option value="northwest">Northwest</option>
+            <option value="northeast">Northeast</option>
+            <option value="southwest">Southwest</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>Compress (JPEG quality):</label>
+          <input id="compress-quality" type="number" min="1" max="100" placeholder="Quality">
+        </div>
+        <div class="row">
+          <label>Format:</label>
+          <select id="format">
+            <option value="">(original)</option>
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WEBP</option>
+          </select>
+        </div>
+        <div class="checkbox-row">
+          <label><input type="checkbox" id="flip"> Flip (vertical)</label>
+          <label><input type="checkbox" id="mirror"> Mirror (horizontal)</label>
+          <label><input type="checkbox" id="grayscale"> Grayscale</label>
+          <label><input type="checkbox" id="sepia"> Sepia</label>
+        </div>
+      </div>
+      <button onclick="transformImage()">Transform</button>
+      <div id="transform-result"></div>
+    </div>
+  </div>
+  <script>
+    const API_BASE = '/api/v1';
+    let token = '';
+
+    function setAuthHeader(headers) {
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+    }
+
+    function show(sectionId) {
+      document.getElementById('upload-section').style.display = sectionId === 'upload' ? '' : 'none';
+      document.getElementById('images-section').style.display = sectionId === 'images' ? '' : 'none';
+      document.getElementById('transform-section').style.display = sectionId === 'transform' ? '' : 'none';
+    }
+
+    function showResult(id, message, isError = false) {
+      const el = document.getElementById(id);
+      el.innerText = '';
+      el.className = isError ? 'error' : 'result';
+      el.textContent = message;
+    }
+
+    async function register() {
+      const username = document.getElementById('reg-username').value;
+      const password = document.getElementById('reg-password').value;
+      const res = await fetch(API_BASE + '/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.status === 201) {
+        showResult('register-result', 'Registered!');
+      } else {
+        showResult('register-result', 'Error: ' + (await res.text()), true);
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const res = await fetch(API_BASE + '/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        token = data.token;
+        showResult('login-result', 'Logged in!');
+        show('upload');
+        listImages();
+      } else {
+        showResult('login-result', 'Login failed: ' + (await res.text()), true);
+      }
+    }
+
+    async function uploadImage() {
+      const fileInput = document.getElementById('image-file');
+      if (!fileInput.files.length) return alert('Select a file!');
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+      const headers = {};
+      setAuthHeader(headers);
+      const res = await fetch(API_BASE + '/images', {
+        method: 'POST',
+        headers,
+        body: formData
+      });
+      if (res.status === 201) {
+        showResult('upload-result', 'Uploaded!');
+        listImages();
+      } else {
+        showResult('upload-result', 'Error: ' + (await res.text()), true);
+      }
+    }
+
+    async function listImages() {
+      const headers = {};
+      setAuthHeader(headers);
+      const res = await fetch(API_BASE + '/images', { headers });
+      if (!res.ok) {
+        document.getElementById('images-list').innerText = 'Error: ' + (await res.text());
+        return;
+      }
+      const images = await res.json();
+      const listDiv = document.getElementById('images-list');
+      listDiv.innerHTML = '';
+      const select = document.getElementById('transform-image-id');
+      select.innerHTML = '';
+      images.forEach(img => {
+        const div = document.createElement('div');
+        div.innerHTML = `<b>ID:</b> ${img.id} <b>Filename:</b> ${img.filename} <pre>${JSON.stringify(img.metadata, null, 2)}</pre>`;
+        listDiv.appendChild(div);
+        const opt = document.createElement('option');
+        opt.value = img.id;
+        opt.text = `${img.id} - ${img.filename}`;
+        select.appendChild(opt);
+      });
+      show('images');
+      document.getElementById('transform-section').style.display = images.length ? '' : 'none';
+    }
+
+    async function transformImage() {
+      const id = document.getElementById('transform-image-id').value;
+      const width = parseInt(document.getElementById('resize-width').value);
+      const height = parseInt(document.getElementById('resize-height').value);
+      const cropLeft = parseInt(document.getElementById('crop-left').value);
+      const cropTop = parseInt(document.getElementById('crop-top').value);
+      const cropWidth = parseInt(document.getElementById('crop-width').value);
+      const cropHeight = parseInt(document.getElementById('crop-height').value);
+      const rotate = parseInt(document.getElementById('rotate').value);
+      const watermarkUrl = document.getElementById('watermark-url').value;
+      const watermarkGravity = document.getElementById('watermark-gravity').value;
+      const flip = document.getElementById('flip').checked;
+      const mirror = document.getElementById('mirror').checked;
+      const compressQuality = parseInt(document.getElementById('compress-quality').value);
+      const format = document.getElementById('format').value;
+      const grayscale = document.getElementById('grayscale').checked;
+      const sepia = document.getElementById('sepia').checked;
+
+      const operations = {};
+      if (width && height) operations.resize = { width, height };
+      if (!isNaN(cropLeft) && !isNaN(cropTop) && !isNaN(cropWidth) && !isNaN(cropHeight)) {
+        operations.crop = { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight };
+      }
+      if (!isNaN(rotate)) operations.rotate = rotate;
+      if (watermarkUrl) operations.watermark = { path: watermarkUrl, gravity: watermarkGravity };
+      if (flip) operations.flip = true;
+      if (mirror) operations.mirror = true;
+      if (!isNaN(compressQuality)) operations.compress = { quality: compressQuality };
+      if (format) operations.format = format;
+      if (grayscale || sepia) {
+        operations.filters = {};
+        if (grayscale) operations.filters.grayscale = true;
+        if (sepia) operations.filters.sepia = true;
+      }
+
+      const headers = { 'Content-Type': 'application/json' };
+      setAuthHeader(headers);
+      const res = await fetch(`${API_BASE}/images/${id}/transform`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ operations })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        document.getElementById('transform-result').innerHTML = `<img src="${url}">`;
+      } else {
+        document.getElementById('transform-result').innerText = 'Error: ' + (await res.text());
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root@22@",
+    "database": "image_processing_service",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "root@22@",
+    "database": "image_processing_service_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "",
+    "database": "image_service",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
